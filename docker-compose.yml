@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  agentic-platform:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agentic-ai-platform
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - LOG_LEVEL=INFO
+      - DATABASE_URL=sqlite+aiosqlite:///./data/app.db
+      - CHECKPOINTER_DB_PATH=./data/checkpoints.db
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - LLM_MODEL=qwen2.5:3b-instruct
+      - LLM_FALLBACK_MOCK=true
+      - MAX_PLAN_STEPS=8
+      - MAX_STEP_RETRIES=2
+      - MAX_REPLANS=2
+    volumes:
+      - platform-data:/app/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; res = httpx.get('http://127.0.0.1:8000/api/v1/health'); exit(0 if res.status_code == 200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  platform-data:
+    driver: local
