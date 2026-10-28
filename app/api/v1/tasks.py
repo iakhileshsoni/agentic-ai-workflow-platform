@@ -85,3 +85,20 @@ async def get_task_trace(
     if not res:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found or access denied")
     return res
+
+
+@router.post(
+    "/{task_id}/cancel",
+    status_code=status.HTTP_200_OK,
+    summary="Cancel an active or paused task"
+)
+async def cancel_task(
+    task_id: str,
+    user_id: str = Depends(verify_api_key),
+    service: TaskService = Depends(get_task_service)
+):
+    """Cooperatively cancel workflow execution."""
+    res = await service.cancel_task(task_id, user_id)
+    if not res:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found or access denied")
+    return res

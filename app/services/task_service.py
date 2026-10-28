@@ -236,3 +236,43 @@ class TaskService:
             "status": task.status,
             "trace_events": trace
         }
+
+    async def cancel_task(self, task_id: str, user_id: str) -> Optional[Dict[str, Any]]:
+        """Cooperatively cancel a running or paused task."""
+        task = await self.repo.get_by_id(task_id)
+        if not task or (task.user_id != user_id and user_id != "admin-user"):
+            return None
+
+        if task.status in ("COMPLETED", "FAILED", "CANCELLED"):
+            return {
+                "task_id": task_id,
+                "status": task.status,
+                "message": f"Task is already terminal ({task.status})"
+            }
+
+        workflow_app = await get_workflow_app()
+        config = {"configurable": {"thread_id": task_id}}
+
+        # Set cancellation flag in state
+        try:
+            await workflow_app.aupdate_state(config, {"is_cancelled": True, "status": "CANCELLED"})
+        except Exception:
+            pass
+
+        await self.repo.update_task_progress(
+            task_id=task_id,
+            status="CANCELLED",
+            error_summary="Workflow execution cancelled by user"
+        )
+        await self.repo.record_audit_event(
+            task_id=task_id,
+            user_id=user_id,
+            action="TASK_CANCELLED",
+            resource_type="task"
+        )
+
+        return {
+            "task_id": task_id,
+            "status": "CANCELLED",
+            "message": "Task cancelled successfully"
+        }

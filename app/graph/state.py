@@ -48,8 +48,11 @@ class GraphState(TypedDict):
     max_steps: int
     max_replans: int
     deadline_at: str                    # ISO-8601 UTC string
-    
-    # Final Result & Diagnostics
+    is_cancelled: bool                  # Cooperative cancellation flag
+
+    # Human-In-The-Loop Approval Data
+    pending_approval: Optional[Dict[str, Any]]
+    approval_decision: Optional[Dict[str, Any]] # {"approval_id": ..., "decision": "APPROVED"|"REJECTED", "notes": ...}
     final_report: Optional[str]
     error_summary: Optional[str]
     execution_trace: List[Dict[str, Any]]

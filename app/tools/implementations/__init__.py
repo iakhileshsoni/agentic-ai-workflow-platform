@@ -4,6 +4,7 @@ from app.tools.implementations.doc_search import DocSearchTool
 from app.tools.implementations.comparison import ComparisonTool
 from app.tools.implementations.report_generator import ReportGeneratorTool
 from app.tools.implementations.validator import ResultValidatorTool
+from app.tools.implementations.sensitive_action import SensitiveActionTool
 
 __all__ = [
     "CalculatorTool",
@@ -12,4 +13,5 @@ __all__ = [
     "ComparisonTool",
     "ReportGeneratorTool",
     "ResultValidatorTool",
+    "SensitiveActionTool",
 ]

@@ -11,6 +11,7 @@ from app.tools.implementations import (
     ComparisonTool,
     ReportGeneratorTool,
     ResultValidatorTool,
+    SensitiveActionTool,
 )
 
 
@@ -29,6 +30,7 @@ class ToolRegistry:
         self.register(ComparisonTool())
         self.register(ReportGeneratorTool())
         self.register(ResultValidatorTool())
+        self.register(SensitiveActionTool())
 
     def register(self, tool: BaseTool) -> None:
         """Register a new tool instance."""
