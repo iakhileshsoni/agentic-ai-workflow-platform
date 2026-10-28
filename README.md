@@ -23,6 +23,10 @@ An enterprise-grade, stateful, multi-step **Agentic AI Workflow Automation Platf
 
 ## 🏗️ System Architecture
 
+<p align="center">
+  <img src="docs/architecture_diagram.jpg" alt="System Architecture Diagram" width="850"/>
+</p>
+
 ```mermaid
 flowchart TD
     User([Client / User]) -->|POST /api/v1/tasks| API[FastAPI Gateway]
