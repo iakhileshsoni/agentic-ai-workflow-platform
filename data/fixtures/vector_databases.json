@@ -1,0 +1,122 @@
+{
+  "vector_databases": [
+    {
+      "id": "qdrant",
+      "name": "Qdrant",
+      "license": "Apache 2.0 (Open Source) & Managed Cloud",
+      "architecture": "Rust-based vector search engine with payload-based filtering",
+      "indexing_algorithms": ["HNSW", "Scalar Quantization", "Product Quantization"],
+      "deployment_options": ["Self-hosted Docker", "Kubernetes Operator", "Qdrant Cloud"],
+      "supported_distance_metrics": ["Cosine", "Dot Product", "Euclidean", "Manhattan"],
+      "payload_filtering": "Rich boolean JSON filtering executed alongside vector search",
+      "pricing_tier": {
+        "open_source": "Free self-hosted",
+        "cloud_starter": "Free 1GB cluster tier",
+        "cloud_standard": "Pay-as-you-go based on RAM/CPU (approx $25/month for 4GB RAM)"
+      },
+      "strengths": [
+        "Extremely high QPS and low query latency (Rust implementation)",
+        "Advanced payload filtering without performance degradation",
+        "Native quantization reduces RAM footprint by up to 4x"
+      ],
+      "trade_offs": [
+        "Smaller third-party plugin ecosystem compared to older databases",
+        "Clustering in open-source requires manual topology management"
+      ]
+    },
+    {
+      "id": "milvus",
+      "name": "Milvus",
+      "license": "Apache 2.0 (Open Source) & Zilliz Managed Cloud",
+      "architecture": "Distributed cloud-native vector database separating compute and storage (MinIO/Pulsar)",
+      "indexing_algorithms": ["HNSW", "IVF_FLAT", "IVF_SQ8", "IVF_PQ", "SCaNN", "DiskANN"],
+      "deployment_options": ["Milvus Lite (local pip/embedded)", "Docker Compose (Standalone)", "Distributed Kubernetes Helm", "Zilliz Cloud"],
+      "supported_distance_metrics": ["L2 (Euclidean)", "IP (Inner Product)", "Cosine", "Hamming", "Jaccard"],
+      "payload_filtering": "Scalar attribute filtering via boolean expressions",
+      "pricing_tier": {
+        "open_source": "Free self-hosted (infrastructure costs apply)",
+        "cloud_serverless": "Pay-per-million CU (starts around $0.05 per million reads)",
+        "cloud_dedicated": "Starts at approx $65/month"
+      },
+      "strengths": [
+        "Proven horizontal scalability to billions of vector embeddings",
+        "DiskANN support enables large-scale datasets beyond RAM limits",
+        "Milvus Lite allows simple in-process Python development"
+      ],
+      "trade_offs": [
+        "Distributed deployment introduces high operational complexity (requires Kafka/Pulsar, MinIO, etcd)",
+        "Higher resource baseline requirements for full cluster mode"
+      ]
+    },
+    {
+      "id": "pinecone",
+      "name": "Pinecone",
+      "license": "Proprietary Commercial SaaS Only",
+      "architecture": "Fully managed serverless cloud vector database architecture",
+      "indexing_algorithms": ["Proprietary optimized graph/ANN algorithms"],
+      "deployment_options": ["AWS, GCP, Azure managed multi-region"],
+      "supported_distance_metrics": ["Cosine", "Euclidean", "Dot Product"],
+      "payload_filtering": "Metadata filtering with standard comparison operators",
+      "pricing_tier": {
+        "starter": "Free tier (up to 100k vectors, single index)",
+        "serverless": "Usage-based: $0.25-$0.40/GB storage + $8.25/million read units",
+        "pod_based": "Starts at approx $70/month per pod"
+      },
+      "strengths": [
+        "Zero infrastructure maintenance; fully managed serverless experience",
+        "Instant index provisioning and seamless scaling",
+        "Reliable enterprise SLAs and high availability"
+      ],
+      "trade_offs": [
+        "Strictly vendor-locked cloud SaaS; cannot be self-hosted on-premises or air-gapped",
+        "Predicting monthly costs under bursty read workloads can be complex"
+      ]
+    },
+    {
+      "id": "weaviate",
+      "name": "Weaviate",
+      "license": "BSD-3-Clause (Open Source) & Managed Cloud",
+      "architecture": "Go-based vector search engine with integrated multi-modal modules and GraphQL/REST",
+      "indexing_algorithms": ["HNSW", "Dynamic Indexing", "Product Quantization"],
+      "deployment_options": ["Embedded Weaviate", "Docker Compose", "Kubernetes", "Weaviate Cloud"],
+      "supported_distance_metrics": ["Cosine", "Dot Product", "L2-Squared", "Manhattan", "Hamming"],
+      "payload_filtering": "GraphQL/REST filtering on cross-referenced objects and inverted indexes",
+      "pricing_tier": {
+        "open_source": "Free self-hosted",
+        "cloud_serverless": "Starts at $0.025 per 1,000 queries",
+        "cloud_dedicated": "Starts around $120/month"
+      },
+      "strengths": [
+        "Modular architecture with out-of-the-box vectorizer modules (OpenAI, HuggingFace)",
+        "Hybrid search (BM25 + Vector) built directly into core",
+        "Object cross-referencing capabilities resembling a knowledge graph"
+      ],
+      "trade_offs": [
+        "Go garbage collection tuning necessary under very high memory allocations",
+        "Complex schema definitions compared to pure key-value vector stores"
+      ]
+    },
+    {
+      "id": "chroma",
+      "name": "Chroma",
+      "license": "Apache 2.0 (Open Source)",
+      "architecture": "Python/Rust-based embedded or client-server vector store built for AI application rapid prototyping",
+      "indexing_algorithms": ["HNSW (hnswlib)"],
+      "deployment_options": ["In-memory / Local SQLite persistence", "Docker", "Chroma Distributed (Beta)"],
+      "supported_distance_metrics": ["Cosine", "L2", "IP"],
+      "payload_filtering": "Document metadata where-clause dictionary filtering",
+      "pricing_tier": {
+        "open_source": "Free self-hosted / embedded"
+      },
+      "strengths": [
+        "Zero-friction installation (`pip install chromadb`) and local prototyping",
+        "Default built-in embedding functions for quick RAG starts",
+        "Lightweight footprint ideal for desktop apps and unit tests"
+      ],
+      "trade_offs": [
+        "Historically focused on embedded rather than massive distributed multi-tenant workloads",
+        "Fewer advanced quantization options for billion-scale production deployments"
+      ]
+    }
+  ]
+}

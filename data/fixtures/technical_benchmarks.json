@@ -1,0 +1,31 @@
+{
+  "benchmarks": {
+    "benchmark_environment": "Standard 1M 768-dim Vectors, 95% Recall Target, Local Reference Hardware",
+    "metrics": [
+      {
+        "candidate": "Qdrant",
+        "p99_latency_ms": 12.4,
+        "throughput_qps": 820,
+        "ram_usage_gb_uncompressed": 3.8,
+        "ram_usage_gb_quantized": 1.1,
+        "build_time_minutes": 14
+      },
+      {
+        "candidate": "Milvus",
+        "p99_latency_ms": 14.1,
+        "throughput_qps": 760,
+        "ram_usage_gb_uncompressed": 4.2,
+        "ram_usage_gb_quantized": 1.3,
+        "build_time_minutes": 18
+      },
+      {
+        "candidate": "Pinecone",
+        "p99_latency_ms": 22.5,
+        "throughput_qps": 650,
+        "ram_usage_gb_uncompressed": null,
+        "ram_usage_gb_quantized": null,
+        "build_time_minutes": null
+      }
+    ]
+  }
+}
