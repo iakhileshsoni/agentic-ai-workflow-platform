@@ -1,0 +1,461 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Agentic AI Workflow Automation Platform",
+    "description": "Comprehensive Postman collection to test all endpoints of the Agentic AI Workflow Automation Platform end-to-end, including Task Ingestion, Polling, Traces, Markdown Reports, Cancellation, and Human-in-the-Loop (HIL) Approvals.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "admin-secret-key-12345",
+      "type": "string"
+    },
+    {
+      "key": "taskId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "approvalId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health & Probes",
+      "item": [
+        {
+          "name": "Liveness Probe (Health)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            },
+            "description": "Verifies that the API service process is active and healthy."
+          },
+          "response": []
+        },
+        {
+          "name": "Readiness Probe (Dependencies & Ollama)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ready",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ready"
+              ]
+            },
+            "description": "Verifies database connectivity, SQLite checkpointer status, and Ollama local model readiness."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Task Orchestration",
+      "item": [
+        {
+          "name": "Submit Task (Vector DB Research)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.task_id) {",
+                  "    pm.collectionVariables.set('taskId', jsonData.task_id);",
+                  "    console.log('Saved taskId:', jsonData.task_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "idemp-vector-research-001"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"objective\": \"Research three candidate vector databases using approved information sources, compare their supported capabilities and pricing information where available, identify important trade-offs, and prepare a recommendation report.\",\n  \"parameters\": {\n    \"max_candidates\": 3\n  },\n  \"max_execution_seconds\": 180\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks"
+              ]
+            },
+            "description": "Ingests a multi-step research objective and dispatches the LangGraph state machine. Auto-saves the returned task_id into the collection variable {{taskId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Task (Deterministic Arithmetic)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.task_id) {",
+                  "    pm.collectionVariables.set('taskId', jsonData.task_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"objective\": \"Calculate arithmetic operation: 125 * 8.5\",\n  \"parameters\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks"
+              ]
+            },
+            "description": "Submits a lightweight deterministic calculation task to verify single-step fast execution."
+          },
+          "response": []
+        },
+        {
+          "name": "Poll Task Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks",
+                "{{taskId}}",
+                "status"
+              ]
+            },
+            "description": "Polls live execution status, active node, completed steps count, and deadline."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Full Task Detail & Plan",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks",
+                "{{taskId}}"
+              ]
+            },
+            "description": "Retrieves the complete task record, including the validated ExecutionPlan, completed step IDs, evidence count, and final report."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Execution Trace (Timing & Node Events)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/trace",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks",
+                "{{taskId}}",
+                "trace"
+              ]
+            },
+            "description": "Returns full chronological telemetry trace showing per-node execution timings, tool names, and success flags."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks",
+                "{{taskId}}",
+                "cancel"
+              ]
+            },
+            "description": "Cooperatively sets is_cancelled = true in the graph state machine and marks task CANCELLED."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Reports & Evidence",
+      "item": [
+        {
+          "name": "Download Final Markdown Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/{{taskId}}/markdown",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                "{{taskId}}",
+                "markdown"
+              ]
+            },
+            "description": "Downloads the final synthesized executive Markdown report grounded in empirical evidence."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Human-In-The-Loop Approvals",
+      "item": [
+        {
+          "name": "List Pending Approvals",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.length > 0) {",
+                  "    pm.collectionVariables.set('approvalId', jsonData[0].approval_id);",
+                  "    console.log('Saved approvalId:', jsonData[0].approval_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/approvals",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "approvals"
+              ]
+            },
+            "description": "Queries all pending approval requests awaiting operator sign-off. Automatically saves the first pending approval_id to {{approvalId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Approval Request Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/approvals/{{approvalId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "approvals",
+                "{{approvalId}}"
+              ]
+            },
+            "description": "Inspects exact proposed tool arguments, operation hash, and risk level before submitting a decision."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Approval Decision (APPROVED)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"APPROVED\",\n  \"notes\": \"Signed off by Senior Backend Architect.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/approvals/{{approvalId}}/decision",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "approvals",
+                "{{approvalId}}",
+                "decision"
+              ]
+            },
+            "description": "Submits an APPROVED decision. Resumes the paused LangGraph workflow checkpoint and executes the authorized tool."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Approval Decision (REJECTED)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"REJECTED\",\n  \"notes\": \"Rejected: Action does not comply with security export policy.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/approvals/{{approvalId}}/decision",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "approvals",
+                "{{approvalId}}",
+                "decision"
+              ]
+            },
+            "description": "Submits a REJECTED decision. The workflow records the rejection and transitions into terminal failure without executing the sensitive action."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
